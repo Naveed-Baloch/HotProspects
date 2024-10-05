@@ -8,32 +8,24 @@
 import SwiftUI
 
 struct ContentView: View {
-    private let users = ["Naveed", "ali", "Shahzad", "Momin"]
-    @State private var selectedUser = Set<String>()
-    var body: some View {
-        NavigationStack {
-            VStack {
-                Image(systemName: "globe")
-                    .imageScale(.large)
-                    .foregroundStyle(.tint)
-                Text("Hello, world!")
-                
-                List(users, id: \.self, selection: $selectedUser) { user in
-                    Text(user)
-                }
+    @State private var selectedTab = "One"
 
-                if selectedUser.isEmpty == false {
-                    Text("You selected \(selectedUser.formatted())")
+    var body: some View {
+        TabView(selection: $selectedTab) {
+            Button("Show Tab 2") {
+                selectedTab = "Two"
+            }
+            .tabItem {
+                Label("One", systemImage: "star")
+            }
+            .tag("One")
+
+            Text("Tab 2")
+                .tabItem {
+                    Label("Two", systemImage: "circle")
                 }
-            }
-            .padding()
-            .toolbar {
-                EditButton()
-            }
-        
+                .tag("Two")
         }
-        
-        
     }
 }
 
