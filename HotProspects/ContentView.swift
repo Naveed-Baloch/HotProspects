@@ -45,6 +45,15 @@ struct ContentView: View {
                             backgroundColor = .blue
                         }
                     }
+                
+                List{
+                    Text("Hello from List")
+                        .swipeActions(edge: /*@START_MENU_TOKEN@*/.trailing/*@END_MENU_TOKEN@*/){
+                            Button("Delete") {
+                                print("delete item")
+                            }
+                        }
+                }
             }
             .tabItem {
                 Label("One", systemImage: "star")
