@@ -11,7 +11,7 @@ struct ContentView: View {
     @State private var selectedTab = "One"
     
     @State private var output = ""
-
+    
     var body: some View {
         TabView(selection: $selectedTab) {
             VStack{
@@ -22,7 +22,7 @@ struct ContentView: View {
                 
                 Button("Fetch Data") {
                     Task {
-                       await fetchReadings()
+                        await fetchReadings()
                     }
                 }
                 
@@ -32,7 +32,7 @@ struct ContentView: View {
                 Label("One", systemImage: "star")
             }
             .tag("One")
-
+            
             Text("Tab 2")
                 .tabItem {
                     Label("Two", systemImage: "circle")
@@ -42,14 +42,21 @@ struct ContentView: View {
     }
     
     func fetchReadings() async {
-        do {
+        let fetchTask = Task {
             let url = URL(string: "https://hws.dev/readings.json")!
             let (data, _) = try await URLSession.shared.data(from: url)
-            let readings = try JSONDecoder().decode([Double].self, from: data)
-            output = "Found \(readings.count) readings"
-        } catch {
-            print("Error")
+            return try JSONDecoder().decode([Double].self, from: data)
         }
+        
+        let result = await fetchTask.result
+        
+        switch result {
+        case .success(let success):
+            output = String(success.count)
+        case .failure(let failure):
+            output = "Error: \(failure.localizedDescription)"
+        }
+        
     }
 }
 
