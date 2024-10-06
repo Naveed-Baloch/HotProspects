@@ -12,6 +12,8 @@ struct ContentView: View {
     
     @State private var output = ""
     
+    @State private var backgroundColor = Color.red
+    
     var body: some View {
         TabView(selection: $selectedTab) {
             VStack{
@@ -27,6 +29,22 @@ struct ContentView: View {
                 }
                 
                 Text("Readings \(output)")
+                Text("Change Color")
+                    .padding()
+                    .background(backgroundColor)
+                    .contextMenu {
+                        Button("Red") {
+                            backgroundColor = .red
+                        }
+                        
+                        Button("Green") {
+                            backgroundColor = .green
+                        }
+                        
+                        Button("Blue") {
+                            backgroundColor = .blue
+                        }
+                    }
             }
             .tabItem {
                 Label("One", systemImage: "star")
