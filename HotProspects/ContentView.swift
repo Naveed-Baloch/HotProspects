@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UserNotifications
+import SamplePackage
 
 struct ContentView: View {
     @State private var selectedTab = "One"
@@ -14,6 +15,14 @@ struct ContentView: View {
     @State private var output = ""
     
     @State private var backgroundColor = Color.red
+    
+    let possibleNumbers = 1...60
+    
+    var results: String {
+        let selected = possibleNumbers.random(7).sorted()
+        let strings = selected.map(String.init)
+        return strings.formatted()
+    }
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -82,6 +91,8 @@ struct ContentView: View {
                     // add our notification request
                     UNUserNotificationCenter.current().add(request)
                 }
+                
+                Text(results)
             }
             .tabItem {
                 Label("One", systemImage: "star")
