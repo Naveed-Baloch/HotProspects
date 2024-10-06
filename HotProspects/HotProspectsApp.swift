@@ -13,5 +13,6 @@ struct HotProspectsApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: Prospect.self)
     }
 }
