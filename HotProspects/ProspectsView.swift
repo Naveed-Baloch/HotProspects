@@ -9,6 +9,7 @@ import CodeScanner
 import Foundation
 import SwiftUI
 import SwiftData
+import UserNotifications
 
 struct ProspectsView: View {
     
@@ -21,6 +22,7 @@ struct ProspectsView: View {
     @Query(sort: \Prospect.name) var prospects: [Prospect]
     @Environment(\.modelContext) var modelContext
     @State private var isShowingScanner = false
+    
     
     var title: String {
         switch filter {
@@ -70,6 +72,11 @@ struct ProspectsView: View {
                         .tint(.green)
                     }
                     
+                    Button("Remind Me", systemImage: "bell") {
+                        addNotification(for: prospect)
+                    }
+                    .tint(.orange)
+                    
                     Button("Delete", systemImage: "trash", role: .destructive) {
                         modelContext.delete(prospect)
                     }
@@ -84,12 +91,12 @@ struct ProspectsView: View {
                         isShowingScanner = true
                     }
                 }
-                
-                ToolbarItem(placement: .topBarLeading) {
-                    EditButton()
-                }
-                
                 if selectedProspects.isEmpty == false {
+                    ToolbarItem(placement: .topBarLeading) {
+                        EditButton()
+                    }
+                    
+                    
                     ToolbarItem(placement: .bottomBar) {
                         Button("Delete Selected", action: delete)
                     }
@@ -120,6 +127,39 @@ struct ProspectsView: View {
     func delete() {
         for prospect in selectedProspects {
             modelContext.delete(prospect)
+        }
+    }
+    
+    func addNotification(for prospect: Prospect) {
+        let center = UNUserNotificationCenter.current()
+        
+        let addRequest = {
+            let content = UNMutableNotificationContent()
+            content.title = "Contact \(prospect.name)"
+            content.subtitle = prospect.emailAddress
+            content.sound = UNNotificationSound.default
+            
+            var dateComponents = DateComponents()
+            dateComponents.hour = 9
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+            //            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
+            
+            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+            center.add(request)
+        }
+        
+        center.getNotificationSettings { settings in
+            if settings.authorizationStatus == .authorized {
+                addRequest()
+            } else {
+                center.requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
+                    if success {
+                        addRequest()
+                    } else if let error {
+                        print(error.localizedDescription)
+                    }
+                }
+            }
         }
     }
 }
